@@ -25,7 +25,6 @@ export class MoviesService {
   getPopulares() {
 
     this.popularesPage++;
-    console.log('populares page: ', this.popularesPage);
 
     const query = `/discover/movie?sort_by=popularity.desc&page=${this.popularesPage}`;
 
