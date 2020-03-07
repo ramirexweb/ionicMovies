@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RespuestaMDB, PeliculaDetalle, RespuestaCredits } from '../interfaces/interfaces';
+import { RespuestaMDB, PeliculaDetalle, RespuestaCredits, Genre } from '../interfaces/interfaces';
 import { environment } from 'src/environments/environment';
 
 const URL = environment.url;
@@ -12,6 +12,7 @@ const apiKey = environment.apiKey;
 export class MoviesService {
 
   private popularesPage = 0;
+  generos: Genre[]= [];
 
   constructor(
     private http: HttpClient
@@ -30,6 +31,12 @@ export class MoviesService {
 
 
     return this.executeQuery<RespuestaMDB>(query);
+  }
+
+  getSearchPelicula(search: string) {
+    const query = `/search/movie?include_adult=yes&query=${search}`;
+
+    return this.executeQuery(query);
   }
 
   getFeature() {
@@ -58,5 +65,15 @@ export class MoviesService {
 
   getActoresPelicula( id: string) {
     return this.executeQuery<RespuestaCredits>(`/movie/${id}/credits?a=1`);
+  }
+
+  cargarGeneros(): Promise<Genre[]> {
+    return new Promise( resolve => {
+      this.executeQuery('/genre/movie/list?a=1')
+        .subscribe( resp => {
+          this.generos = resp['genres'];
+          resolve(this.generos);
+      });
+    });
   }
 }

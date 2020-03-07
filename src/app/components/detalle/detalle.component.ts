@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { MoviesService } from '../../services/movies.service';
 import { PeliculaDetalle, Cast } from '../../interfaces/interfaces';
 import { ModalController } from '@ionic/angular';
+import { DataLocalService } from '../../services/data-local.service';
 
 @Component({
   selector: 'app-detalle',
@@ -22,13 +23,18 @@ export class DetalleComponent implements OnInit {
   pelicula: PeliculaDetalle = {};
   actores: Cast[] = [];
   oculto = 150;
+  estrella = 'star-outline';
 
   constructor(
     private moviesSerive: MoviesService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private dataLocalService: DataLocalService
   ) { }
 
   ngOnInit() {
+
+    this.dataLocalService.existePelicula( this.id)
+      .then( existe => this.estrella = (existe)? 'star': 'star-outline');
 
     this.moviesSerive.getPeliculaDetalle(this.id)
       .subscribe( resp => {
@@ -46,7 +52,9 @@ export class DetalleComponent implements OnInit {
     this.modalController.dismiss();
   }
 
-  favorito() {
+  async favorito() {
+    const existe = this.dataLocalService.guardarPelicula(this.pelicula);
+    this.estrella = ( existe ) ? 'star': 'star-outline'
 
   }
 }
